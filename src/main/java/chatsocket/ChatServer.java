@@ -31,11 +31,11 @@ public class ChatServer
 
                 }
              } catch (IOException e){
-                    closeServerSocket();
+                    chiudiServerSocket();
                 }
             }
 
-                public void closeServerSocket(){
+                public void chiudiServerSocket(){
 
                     try {
                         
@@ -51,12 +51,12 @@ public class ChatServer
                     }
                 }
 
-            }
-        }
+            
+        
 
 
-    }
-    public static void main( String[] args )
+    
+    public static void main( String[] args ) throws IOException
     {
 
         ServerSocket serverSocket = new ServerSocket(1234);
@@ -65,6 +65,8 @@ public class ChatServer
 
 
     }
+}
+    
 
 
 
