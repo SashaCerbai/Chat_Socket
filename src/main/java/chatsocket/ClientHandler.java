@@ -21,7 +21,7 @@ public class ClientHandler implements Runnable {
             this.nome = bufferedReader.readLine();
             
             clientHandlers.add(this);
-            broadcastMessage("SERVER: " + nome + " si è unito alla chat");
+            MessaggioBroadcast("SERVER: " + nome + " si è unito alla chat");
         } catch (IOException e) {
             
             chiudiTutto(socket, bufferedReader, bufferedWriter);
@@ -37,7 +37,7 @@ public class ClientHandler implements Runnable {
             try {
                 
                 messagioDalClient = bufferedReader.readLine();
-                broadcastMessage(messagioDalClient);
+                MessaggioBroadcast(messagioDalClient);
             } catch (IOException e) {
                 chiudiTutto(socket, bufferedReader, bufferedWriter);
                 break;
@@ -45,7 +45,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void broadcastMessage(String messageToSend) {
+    public void MessaggioBroadcast(String messageToSend) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
     
@@ -61,14 +61,14 @@ public class ClientHandler implements Runnable {
         }
     }
 
-        public void removeClientHandler() {
+        public void rimuoviClientHandler() {
         clientHandlers.remove(this);
-        broadcastMessage("SERVER: " + nome + " ha abbandonato la chat");
+        MessaggioBroadcast("SERVER: " + nome + " ha abbandonato la chat");
     }
 
     public void chiudiTutto(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
     
-        removeClientHandler();
+        rimuoviClientHandler();
         try {
             if (bufferedReader != null) {
                 bufferedReader.close();
