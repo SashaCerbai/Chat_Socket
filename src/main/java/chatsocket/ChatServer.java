@@ -17,7 +17,7 @@ public class ChatServer
         }
     
 
-        public void startServer(){
+        public void avviaServer(){
 
             try{
 
@@ -61,7 +61,7 @@ public class ChatServer
 
         ServerSocket serverSocket = new ServerSocket(1234);
         ChatServer server = new ChatServer(serverSocket);
-        server.startServer();
+        server.avviaServer();
 
 
     }
