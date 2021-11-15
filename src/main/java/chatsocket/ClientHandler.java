@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+
 public class ClientHandler implements Runnable {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
@@ -11,6 +12,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String nome;
+    public static ArrayList<String> listanomi = new ArrayList<>();
 
     public ClientHandler(Socket socket) {
         try {
@@ -22,6 +24,14 @@ public class ClientHandler implements Runnable {
             
             clientHandlers.add(this);
             MessaggioBroadcast("SERVER: " + nome + " si è unito alla chat");
+           
+            listanomi.add(nome);
+            MessaggioLista("utenti connessi : ");
+            for(int i=0;listanomi.size()>i;i++){
+                MessaggioLista(listanomi.get(i));
+            } 
+            MessaggioLista("\n");
+           
         } catch (IOException e) {
             
             chiudiTutto(socket, bufferedReader, bufferedWriter);
@@ -54,6 +64,20 @@ public class ClientHandler implements Runnable {
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
                 }
+            } catch (IOException e) {
+    
+                chiudiTutto(socket, bufferedReader, bufferedWriter);
+            }
+        }
+    }
+
+    public void MessaggioLista(String messageToSend) {
+        for (ClientHandler clientHandler : clientHandlers) {
+            try {  
+                    clientHandler.bufferedWriter.write(messageToSend);
+                    clientHandler.bufferedWriter.newLine();
+                    clientHandler.bufferedWriter.flush();
+                
             } catch (IOException e) {
     
                 chiudiTutto(socket, bufferedReader, bufferedWriter);

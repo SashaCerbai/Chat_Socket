@@ -1,72 +1,61 @@
 package chatsocket;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 /**
  * Hello world!
  *
  */
-public class ChatServer 
-{
+public class ChatServer {
 
-        private final ServerSocket serverSocket;
-        
-        public ChatServer(ServerSocket ServerSocket){
+    private final ServerSocket serverSocket;
 
-            this.serverSocket = ServerSocket;
+    public ChatServer(ServerSocket ServerSocket) {
+
+        this.serverSocket = ServerSocket;
+    }
+
+    public void avviaServer() {
+
+        try {
+
+            while (!serverSocket.isClosed()) {
+                // nel client Handler, il server socket sarà chiuso
+                Socket socket = serverSocket.accept();
+                System.out.println("Un utente si è unito alla chat");
+                ClientHandler clientHandler = new ClientHandler(socket);
+                Thread thread = new Thread(clientHandler);
+                thread.start();
+
+            }
+        } catch (IOException e) {
+            chiudiServerSocket();
         }
-    
+    }
 
-        public void avviaServer(){
+    public void chiudiServerSocket() {
 
-            try{
+        try {
 
-                while(!serverSocket.isClosed()){
-                    // nel client Handler, il server socket sarà chiuso
-                    Socket socket = serverSocket.accept();
-                    System.out.println("Il client si è unito alla chat");
-                    ClientHandler clientHandler = new ClientHandler(socket);
-                    Thread thread = new Thread(clientHandler);
-                    thread.start();
+            if (serverSocket != null) {
 
-                }
-             } catch (IOException e){
-                    chiudiServerSocket();
-                }
+                serverSocket.close();
             }
 
-                public void chiudiServerSocket(){
+        } catch (IOException e) {
 
-                    try {
-                        
-                        if(serverSocket != null){
+            e.printStackTrace();
 
-                            serverSocket.close();
-                        }
+        }
+    }
 
-                    } catch (IOException e) {
-                        
-                        e.printStackTrace();
-
-                    }
-                }
-
-            
-        
-
-
-    
-    public static void main( String[] args ) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(1234);
         ChatServer server = new ChatServer(serverSocket);
         server.avviaServer();
 
-
     }
 }
-    
-
-
-
