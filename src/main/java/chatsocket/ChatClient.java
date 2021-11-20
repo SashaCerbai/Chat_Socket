@@ -5,14 +5,12 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.ArrayList;
 
-
 public class ChatClient {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     public String nome;
-   
-    
+    public static ArrayList<String> lista = ClientHandler.listanomi;
 
     public ChatClient(Socket socket, String nome) {
         try {
@@ -25,7 +23,6 @@ public class ChatClient {
         }
 
     }
-
 
     public void mandaMessaggio() {
         try {
@@ -85,16 +82,35 @@ public class ChatClient {
     }
 
     public static void main(String[] args) throws IOException {
+
+        String nomeInserire;
         Scanner scanner = new Scanner(System.in);
+
         System.out.print("Inserisci il tuo nome per entrare nella chat: ");
-        String nome = scanner.nextLine();
-        
+        nomeInserire = scanner.nextLine();
+
         Socket socket = new Socket("localhost", 1234);
 
-        ChatClient client = new ChatClient(socket, nome);
-      
+        ChatClient client = new ChatClient(socket, nomeInserire);
+
         client.ascoltoMessaggio();
         client.mandaMessaggio();
     }
 
 }
+
+/*
+ * public static int verificaNome(ArrayList a, String name){
+ * 
+ * for(int i=0; i<a.size(); i++){ if(name.equals(a.get(i))) return 1; }
+ * 
+ * return 0;
+ * 
+ * }
+ * 
+ * do{ if(verificaNome(lista, nomeInserire)==1)
+ * System.out.println("ERRORE, nome già inserito");
+ * 
+ * }while(verificaNome(lista, nomeInserire)==1);
+ * 
+ */
