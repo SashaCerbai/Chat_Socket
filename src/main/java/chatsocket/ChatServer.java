@@ -4,10 +4,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Hello world!
- *
- */
 public class ChatServer {
 
     private final ServerSocket serverSocket;
@@ -30,7 +26,9 @@ public class ChatServer {
                 thread.start();
 
             }
+
         } catch (IOException e) {
+
             chiudiServerSocket();
         }
     }
@@ -58,4 +56,5 @@ public class ChatServer {
         server.avviaServer();
 
     }
+
 }

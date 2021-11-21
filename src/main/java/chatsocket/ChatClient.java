@@ -3,14 +3,14 @@ package chatsocket;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.ArrayList;
+
+//Problemi con nome che in caso di doppione non salva il nuovo nome nel client
 
 public class ChatClient {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     public String nome;
-    public static ArrayList<String> lista = ClientHandler.listanomi;
 
     public ChatClient(Socket socket, String nome) {
         try {
@@ -98,19 +98,3 @@ public class ChatClient {
     }
 
 }
-
-/*
- * public static int verificaNome(ArrayList a, String name){
- * 
- * for(int i=0; i<a.size(); i++){ if(name.equals(a.get(i))) return 1; }
- * 
- * return 0;
- * 
- * }
- * 
- * do{ if(verificaNome(lista, nomeInserire)==1)
- * System.out.println("ERRORE, nome già inserito");
- * 
- * }while(verificaNome(lista, nomeInserire)==1);
- * 
- */

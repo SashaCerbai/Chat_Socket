@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+//Problemi con exit
+
 public class ClientHandler implements Runnable {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
@@ -13,6 +15,7 @@ public class ClientHandler implements Runnable {
     private BufferedWriter bufferedWriter;
     private String nome;
     public static ArrayList<String> listanomi = new ArrayList<>();
+    public static int numDoppione = 1;
 
     public ClientHandler(Socket socket) {
         try {
@@ -20,9 +23,10 @@ public class ClientHandler implements Runnable {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            this.nome = bufferedReader.readLine();
-
             clientHandlers.add(this);
+            this.nome = bufferedReader.readLine();
+            nome = MessaggiocontrolloNome(nome);
+
             MessaggioBroadcast("SERVER: " + nome + " si è unito alla chat");
 
             listanomi.add(nome);
@@ -123,6 +127,9 @@ public class ClientHandler implements Runnable {
         clientHandlers.remove(this);
         listanomi.remove(posizioneNome(listanomi, this.nome));
         MessaggioBroadcast("SERVER: " + nome + " ha abbandonato la chat");
+        System.out.println("Un utente è uscito dalla chat");
+        chiudiTutto(socket, bufferedReader, bufferedWriter);
+
     }
 
     public void chiudiTutto(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
@@ -143,57 +150,70 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void comandi(String messaggio){
+    public void comandi(String messaggio) {
 
-        if(messaggio.equals(nome +": @exit")){
-            rimuoviClientHandler(); 
-        }else if(messaggio.equals(nome +": @lista")){
+        if (messaggio.equals(nome + ": @exit")) {
+            rimuoviClientHandler();
+        } else if (messaggio.equals(nome + ": @help")) {
+            MessaggioSingolo(
+                    "Comandi speciali: \n @exit : Comando pe uscire dalla chat \n @lista : Comando per vedere la lista degli utenti connessi \n @nome$messaggio : Comando per scrivere privatamente ad un utente");
+        } else if (messaggio.equals(nome + ": @lista")) {
             MessaggioSingolo("Lista utenti : ");
-            for(int i=0;listanomi.size()>i;i++){
+            for (int i = 0; listanomi.size() > i; i++) {
                 MessaggioSingolo(listanomi.get(i));
-            } 
-        }else if(messaggio.contains("@") && messaggio.contains("$")){
-            String destinatarioMsg= messaggio.substring(messaggio.indexOf("@")+1, messaggio.indexOf("$"));
-            String Msg= messaggio.substring(0, messaggio.indexOf("@")) + messaggio.substring(messaggio.indexOf("$")+1);
-            
-        
-            if(verificaNome(listanomi, destinatarioMsg)){
+            }
+        } else if (messaggio.contains("@") && messaggio.contains("$")) {
+            String destinatarioMsg = messaggio.substring(messaggio.indexOf("@") + 1, messaggio.indexOf("$"));
+            String Msg = messaggio.substring(0, messaggio.indexOf("@"))
+                    + messaggio.substring(messaggio.indexOf("$") + 1);
+
+            if (verificaNome(listanomi, destinatarioMsg)) {
                 MessaggioPrivato(Msg, destinatarioMsg);
-            }else{
+            } else {
                 MessaggioSingolo("Non esiste questo utente");
             }
 
-        }else{
+        } else {
             MessaggioSingolo("Non esiste questo comando");
-        }      
+        }
     }
 
-    
-    public boolean verificaNome(ArrayList a, String name){
-      
-        for(int i=0; i<a.size(); i++){ if(name.equals(a.get(i))) return true; }
-        
+    public boolean verificaNome(ArrayList a, String name) {
+
+        for (int i = 0; i < a.size(); i++) {
+            if (name.equals(a.get(i)))
+                return true;
+        }
+
         return false;
-      
+
     }
 
-    public int posizioneNome(ArrayList a, String name){
-      
-        for(int i=0; i<a.size(); i++){ if(name.equals(a.get(i))) return i; }
-        
+    public int posizioneNome(ArrayList a, String name) {
+
+        for (int i = 0; i < a.size(); i++) {
+            if (name.equals(a.get(i)))
+                return i;
+        }
+
         return -1;
-      
+
     }
-     /* 
-     * public void MessaggiocontrolloNome(String nomedacontrollare){ for
-     * (ClientHandler clientHandler : clientHandlers) {
-     * 
-     * try{ if ( verificaNome(listanomi, nomedacontrollare)==1) {
-     * clientHandler.bufferedWriter.write("Nome inserito già presente");
-     * clientHandler.bufferedWriter.newLine(); clientHandler.bufferedWriter.flush();
-     * } } catch (IOException e) {
-     * 
-     * chiudiTutto(socket, bufferedReader, bufferedWriter); } } }
-     */
+
+    public String MessaggiocontrolloNome(String nomedacontrollare) {
+
+        if (verificaNome(listanomi, nomedacontrollare)) {
+            String valore = String.valueOf(numDoppione);
+            int pos = posizioneNome(listanomi, nomedacontrollare);
+            nome = listanomi.get(pos);
+            nome += valore;
+            numDoppione++;
+            MessaggioSingolo("Il nome utente è stato modificato perché un'altro utente lo aveva già");
+        } else {
+            MessaggioSingolo("Il nome utente non riscontra problemi");
+        }
+        return nome;
+
+    }
 
 }
