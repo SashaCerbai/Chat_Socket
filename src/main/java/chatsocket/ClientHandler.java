@@ -225,7 +225,7 @@ public class ClientHandler implements Runnable {
             nomeserver = listanomi.get(pos);
             nomeserver += valore;
             numDoppione++;
-            MessaggioSingolo("Il nome utente è stato modificato perché un'altro utente lo aveva già");
+            MessaggioSingolo("Il nome utente è stato modificato perché un'altro utente lo aveva già \n il tuo nuovo nome è :"+nomeserver);
             
         } else {
             MessaggioSingolo("Il nome utente non riscontra problemi");
