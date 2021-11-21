@@ -4,8 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-//Problemi con nome che in caso di doppione non salva il nuovo nome nel client(funziona solo con un doppione)
-
+// Hello World :)-|-(
 public class ChatClient {
     
     private Socket socket;

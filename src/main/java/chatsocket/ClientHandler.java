@@ -14,7 +14,6 @@ public class ClientHandler implements Runnable {
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     public  String nomeserver;
-    public int conta;
     public static ArrayList<String> listanomi = new ArrayList<>();
     public static int numDoppione = 1;
 
@@ -67,10 +66,12 @@ public class ClientHandler implements Runnable {
    public String ControllaNome(String messaggio){
     
     if(!messaggio.startsWith(nomeserver)){
-      
+    String a=listanomi.get(posizioneNome(listanomi, nomeserver)).toString();
+    Character b=a.charAt(a.length()-1);
+    int numero=b.getNumericValue(b);
     String primaparte=messaggio.substring(0,nomeserver.length()-1);
     String secondaparte=messaggio.substring(nomeserver.length());
-    messaggio=primaparte+(numDoppione-1)+":"+secondaparte;
+    messaggio=primaparte+(numero)+":"+secondaparte;
     }
    return messaggio;
    }
@@ -143,9 +144,7 @@ public class ClientHandler implements Runnable {
         listanomi.remove(posizioneNome(listanomi, this.nomeserver));
         MessaggioBroadcast("SERVER: " + nomeserver + " ha abbandonato la chat");
         System.out.println("Un utente è uscito dalla chat");
-        if(conta>0){
-        numDoppione--;
-        }
+        
         chiudiTutto(socket, bufferedReader, bufferedWriter);
 
     }
@@ -227,7 +226,7 @@ public class ClientHandler implements Runnable {
             nomeserver += valore;
             numDoppione++;
             MessaggioSingolo("Il nome utente è stato modificato perché un'altro utente lo aveva già");
-            conta++;
+            
         } else {
             MessaggioSingolo("Il nome utente non riscontra problemi");
         }
