@@ -4,9 +4,10 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-//Problemi con nome che in caso di doppione non salva il nuovo nome nel client
+//Problemi con nome che in caso di doppione non salva il nuovo nome nel client(funziona solo con un doppione)
 
 public class ChatClient {
+    
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -15,7 +16,7 @@ public class ChatClient {
     public ChatClient(Socket socket, String nome) {
         try {
             this.socket = socket;
-            this.nome = nome;
+            this.nome=nome;
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {

@@ -13,7 +13,8 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String nome;
+    public  String nomeserver;
+    public int conta;
     public static ArrayList<String> listanomi = new ArrayList<>();
     public static int numDoppione = 1;
 
@@ -24,12 +25,12 @@ public class ClientHandler implements Runnable {
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             clientHandlers.add(this);
-            this.nome = bufferedReader.readLine();
-            nome = MessaggiocontrolloNome(nome);
+            this.nomeserver = bufferedReader.readLine();
+            nomeserver = MessaggiocontrolloNome(nomeserver);
 
-            MessaggioBroadcast("SERVER: " + nome + " si è unito alla chat");
+            MessaggioBroadcast("SERVER: " + nomeserver + " si è unito alla chat");
 
-            listanomi.add(nome);
+            listanomi.add(nomeserver);
             MessaggioLista("utenti connessi : ");
             for (int i = 0; listanomi.size() > i; i++) {
                 MessaggioLista(listanomi.get(i));
@@ -41,6 +42,7 @@ public class ClientHandler implements Runnable {
             chiudiTutto(socket, bufferedReader, bufferedWriter);
         }
     }
+    
 
     @Override
     public void run() {
@@ -48,8 +50,8 @@ public class ClientHandler implements Runnable {
 
         while (socket.isConnected()) {
             try {
-
                 messaggioDalClient = bufferedReader.readLine();
+                messaggioDalClient=ControllaNome(messaggioDalClient);
                 if (messaggioDalClient.indexOf("@") != -1) {
                     comandi(messaggioDalClient);
                 } else {
@@ -62,11 +64,24 @@ public class ClientHandler implements Runnable {
         }
     }
 
+   public String ControllaNome(String messaggio){
+    
+    if(!messaggio.startsWith(nomeserver)){
+      
+    String primaparte=messaggio.substring(0,nomeserver.length()-1);
+    String secondaparte=messaggio.substring(nomeserver.length());
+    messaggio=primaparte+(numDoppione-1)+":"+secondaparte;
+    }
+   return messaggio;
+   }
+
+
+
     public void MessaggioBroadcast(String messageToSend) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
 
-                if (!clientHandler.nome.equals(nome)) {
+                if (!clientHandler.nomeserver.equals(nomeserver)) {
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
@@ -95,7 +110,7 @@ public class ClientHandler implements Runnable {
     public void MessaggioSingolo(String messageToSend) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
-                if (clientHandler.nome.equals(nome)) {
+                if (clientHandler.nomeserver.equals(nomeserver)) {
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
@@ -110,7 +125,7 @@ public class ClientHandler implements Runnable {
     public void MessaggioPrivato(String messageToSend, String nombre) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
-                if (clientHandler.nome.equals(nombre)) {
+                if (clientHandler.nomeserver.equals(nombre)) {
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
@@ -125,9 +140,12 @@ public class ClientHandler implements Runnable {
     public void rimuoviClientHandler() {
 
         clientHandlers.remove(this);
-        listanomi.remove(posizioneNome(listanomi, this.nome));
-        MessaggioBroadcast("SERVER: " + nome + " ha abbandonato la chat");
+        listanomi.remove(posizioneNome(listanomi, this.nomeserver));
+        MessaggioBroadcast("SERVER: " + nomeserver + " ha abbandonato la chat");
         System.out.println("Un utente è uscito dalla chat");
+        if(conta>0){
+        numDoppione--;
+        }
         chiudiTutto(socket, bufferedReader, bufferedWriter);
 
     }
@@ -152,12 +170,12 @@ public class ClientHandler implements Runnable {
 
     public void comandi(String messaggio) {
 
-        if (messaggio.equals(nome + ": @exit")) {
+        if (messaggio.equals(nomeserver + ": @exit")) {
             rimuoviClientHandler();
-        } else if (messaggio.equals(nome + ": @help")) {
+        } else if (messaggio.equals(nomeserver + ": @help")) {
             MessaggioSingolo(
-                    "Comandi speciali: \n @exit : Comando pe uscire dalla chat \n @lista : Comando per vedere la lista degli utenti connessi \n @nome$messaggio : Comando per scrivere privatamente ad un utente");
-        } else if (messaggio.equals(nome + ": @lista")) {
+                    "Comandi speciali: \n @exit : Comando pe uscire dalla chat \n @lista : Comando per vedere la lista degli utenti connessi \n @nomeserver$messaggio : Comando per scrivere privatamente ad un utente");
+        } else if (messaggio.equals(nomeserver + ": @lista")) {
             MessaggioSingolo("Lista utenti : ");
             for (int i = 0; listanomi.size() > i; i++) {
                 MessaggioSingolo(listanomi.get(i));
@@ -200,19 +218,20 @@ public class ClientHandler implements Runnable {
 
     }
 
-    public String MessaggiocontrolloNome(String nomedacontrollare) {
+    public String MessaggiocontrolloNome(String nomeserverdacontrollare) {
 
-        if (verificaNome(listanomi, nomedacontrollare)) {
+        if (verificaNome(listanomi, nomeserverdacontrollare)) {
             String valore = String.valueOf(numDoppione);
-            int pos = posizioneNome(listanomi, nomedacontrollare);
-            nome = listanomi.get(pos);
-            nome += valore;
+            int pos = posizioneNome(listanomi, nomeserverdacontrollare);
+            nomeserver = listanomi.get(pos);
+            nomeserver += valore;
             numDoppione++;
             MessaggioSingolo("Il nome utente è stato modificato perché un'altro utente lo aveva già");
+            conta++;
         } else {
             MessaggioSingolo("Il nome utente non riscontra problemi");
         }
-        return nome;
+        return nomeserver;
 
     }
 
